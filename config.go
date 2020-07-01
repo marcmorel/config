@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -71,10 +70,7 @@ func downloadFromS3(bucketName string, itemName string) (string, error) {
 		return "", err
 	}
 
-	extension := filepath.Ext(itemName)
-
-	filename := "/tmp/" + RandomHex(30) + extension
-	file, err := os.Create(filename)
+	file, err := ioutil.TempFile("/tmp/", "")
 	if err != nil {
 		return "", err
 	}
@@ -90,7 +86,7 @@ func downloadFromS3(bucketName string, itemName string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filename, nil
+	return file.Name(), nil
 }
 
 /*getContentFromS3 will download the conf file from S3 and return the content as a file*/
